@@ -7,35 +7,23 @@ interface ActivityListProps {
 }
 
 export function ActivityList({ activities, onUpdate, onDelete }: ActivityListProps) {
-  const getPriorityColor = (priority: string) => {
+  const getPriorityStyle = (priority: string) => {
     switch (priority) {
-      case 'high': return 'text-red-600';
-      case 'medium': return 'text-orange-600';
-      case 'low': return 'text-green-600';
-      default: return 'text-gray-600';
+      case 'high': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+      case 'medium': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+      case 'low': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+      default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
       case 'done':
-        return (
-          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-        );
+        return { ring: 'ring-emerald-500', bg: 'bg-emerald-500', check: true };
       case 'in-progress':
-        return (
-          <svg className="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-          </svg>
-        );
+        return { ring: 'ring-amber-500', bg: 'bg-amber-500/30', check: false };
       default:
-        return (
-          <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-          </svg>
-        );
+        return { ring: 'ring-slate-600', bg: 'bg-transparent', check: false };
     }
   };
 
@@ -59,59 +47,73 @@ export function ActivityList({ activities, onUpdate, onDelete }: ActivityListPro
 
   return (
     <div className="space-y-3">
-      {sortedActivities.map(activity => (
-        <div
-          key={activity.id}
-          className={`bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow ${
-            activity.status === 'done' ? 'opacity-60' : ''
-          }`}
-        >
-          <div className="flex items-start gap-3">
-            <button
-              onClick={() => handleStatusChange(activity.id, activity.status)}
-              className="flex-shrink-0 mt-1 hover:scale-110 transition-transform"
-            >
-              {getStatusIcon(activity.status)}
-            </button>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <h4 className={`font-medium text-gray-900 ${activity.status === 'done' ? 'line-through' : ''}`}>
-                  {activity.title}
-                </h4>
-                <span className={`text-xs font-semibold ${getPriorityColor(activity.priority)} whitespace-nowrap`}>
-                  {activity.priority.toUpperCase()}
-                </span>
-              </div>
-              
-              {activity.description && (
-                <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
-              )}
-              
-              <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                <span className="flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      {sortedActivities.map((activity, index) => {
+        const statusStyle = getStatusStyle(activity.status);
+        return (
+          <div
+            key={activity.id}
+            className={`card-modern p-4 group animate-slide-up ${
+              activity.status === 'done' ? 'opacity-50' : ''
+            }`}
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <div className="flex items-start gap-4">
+              <button
+                onClick={() => handleStatusChange(activity.id, activity.status)}
+                className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full ring-2 ${statusStyle.ring} ${statusStyle.bg} flex items-center justify-center hover:scale-110 transition-all`}
+              >
+                {statusStyle.check && (
+                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
-                  Due: {new Date(activity.dueDate).toLocaleDateString()}
-                </span>
-                {activity.status !== 'done' && (
-                  <button
-                    onClick={() => onDelete(activity.id)}
-                    className="text-red-600 hover:text-red-800 ml-auto"
-                  >
-                    Delete
-                  </button>
                 )}
+              </button>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-3">
+                  <h4 className={`font-medium text-white group-hover:text-violet-300 transition-colors ${activity.status === 'done' ? 'line-through text-slate-500' : ''}`}>
+                    {activity.title}
+                  </h4>
+                  <span className={`px-2 py-0.5 rounded-md text-xs font-medium border flex-shrink-0 ${getPriorityStyle(activity.priority)}`}>
+                    {activity.priority}
+                  </span>
+                </div>
+                
+                {activity.description && (
+                  <p className="text-sm text-slate-400 mt-1 line-clamp-2">{activity.description}</p>
+                )}
+                
+                <div className="flex items-center justify-between mt-3">
+                  <span className="flex items-center text-xs text-slate-500 gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {new Date(activity.dueDate).toLocaleDateString()}
+                  </span>
+                  {activity.status !== 'done' && (
+                    <button
+                      onClick={() => onDelete(activity.id)}
+                      className="text-xs text-slate-500 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       
       {activities.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No activities yet. Add your first activity to get started!
+        <div className="card-modern p-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center">
+            <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+          </div>
+          <p className="text-slate-400">No activities yet</p>
+          <p className="text-sm text-slate-500 mt-1">Add tasks to track your progress</p>
         </div>
       )}
     </div>
