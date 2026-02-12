@@ -2,6 +2,10 @@
 
 A modern React-based project tracking application for managing projects, customers, and activities with Dataverse integration.
 
+## Screenshot
+
+![AgenticProjectTracker Application](https://github.com/user-attachments/assets/19ec5e05-36f9-4718-a49b-0cb6165541d0)
+
 ## Features
 
 - **Project Management**: Track initiatives with add/update/complete functionality
